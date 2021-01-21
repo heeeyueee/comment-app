@@ -7,6 +7,24 @@ class CommentInput extends Component{
             content:''
         }
     }
+    componentWillMount(){
+        this._loadUsername()
+    }
+    componentDidMount(){
+        this.textarea.focus()
+    }
+    _loadUsername(){
+        const username=localStorage.getItem("username")
+        if(username){
+            this.setState({username})
+        }  
+    }
+    _saveUsername(username){
+        localStorage.setItem("username",username)
+    }
+    handleUsernameBlur=(e)=>{
+        this._saveUsername(e.target.value)
+    }
     handleUsernameChange=(e)=>{
         this.setState({
             username:e.target.value
@@ -19,8 +37,14 @@ class CommentInput extends Component{
     }
     handleSubmit=()=>{
         if(this.props.onSubmit){
-            const {username,content}=this.state
-            this.props.onSubmit({username,content})
+            this.props.onSubmit({
+                username:this.state.username,
+                content:this.state.content,
+                createdTime:+new Date()
+            })
+            
+            // const {username,content}=this.state
+            // this.props.onSubmit({username,content})
         }
         this.setState({content:''})
     }
@@ -32,6 +56,7 @@ class CommentInput extends Component{
                     <div className="comment-field-input">
                         <input 
                         value={this.state.username}
+                        onBlur={this.handleUsernameBlur}
                         onChange={this.handleUsernameChange}/>
                     </div>
                 </div>
@@ -40,6 +65,7 @@ class CommentInput extends Component{
                     <div className="comment-field-input">
                         <textarea 
                         value={this.state.content}
+                        ref={(textarea)=>this.textarea=textarea}
                         onChange={this.handleContentChange}/>
                     </div>
                 </div>
